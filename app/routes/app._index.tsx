@@ -9,7 +9,10 @@ import {
   Text,
   Badge,
   EmptyState,
-  Button
+  Button,
+  CalloutCard,
+  BlockStack,
+  InlineGrid
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
@@ -35,9 +38,25 @@ export async function loader({ request }: any) {
     }
   });
 
+  const totalHotspots = await prisma.pin.count({
+    where: { image: { lookbook: { shop: session.shop } } }
+  });
+  
+  const aggregates = await prisma.lookbook.aggregate({
+    where: { shop: session.shop },
+    _sum: { views: true, clicks: true }
+  });
+  
+  const stats = {
+    totalLookbooks: lookbooks.length,
+    totalHotspots,
+    totalViews: aggregates._sum.views || 0,
+    totalClicks: aggregates._sum.clicks || 0
+  };
+
   const canCreate = isPro || lookbooks.length < 1;
 
-  return { lookbooks, isPro, canCreate };
+  return { lookbooks, isPro, canCreate, stats };
 }
 
 export async function action({ request }: any) {
@@ -59,7 +78,7 @@ export async function action({ request }: any) {
 }
 
 export default function Index() {
-  const { lookbooks, isPro, canCreate } = useLoaderData<any>();
+  const { lookbooks, isPro, canCreate, stats } = useLoaderData<any>();
   const navigate = useNavigate();
   const submit = useSubmit();
 
@@ -129,14 +148,51 @@ export default function Index() {
 
   return (
     <Page
-      title="Lookbooks"
+      title="Dashboard"
+      subtitle="Manage your interactive lookbooks and view performance."
       primaryAction={{
         content: canCreate ? "Create lookbook" : "Upgrade to Pro to Create",
         onAction: () => canCreate ? navigate("/app/lookbook/new") : navigate("/app/pricing"),
         disabled: !canCreate && isPro
       }}
     >
-      <Layout>
+      <BlockStack gap="500">
+        <Layout>
+          <Layout.Section>
+            <InlineGrid columns={3} gap="400">
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h3" variant="headingSm" tone="subdued">Total Lookbooks</Text>
+                  <Text as="p" variant="headingXl">{stats?.totalLookbooks || 0}</Text>
+                </BlockStack>
+              </Card>
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h3" variant="headingSm" tone="subdued">Total Hotspots</Text>
+                  <Text as="p" variant="headingXl">{stats?.totalHotspots || 0}</Text>
+                </BlockStack>
+              </Card>
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h3" variant="headingSm" tone="subdued">Storefront Views</Text>
+                  <Text as="p" variant="headingXl">{stats?.totalViews || 0}</Text>
+                </BlockStack>
+              </Card>
+            </InlineGrid>
+          </Layout.Section>
+
+          <Layout.Section>
+            <CalloutCard
+              title="Test your layouts with Live Preview"
+              illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10bf5670fcb000721245c4349.svg"
+              primaryAction={{
+                content: 'Try Live Preview',
+                onAction: () => navigate('/app/preview'),
+              }}
+            >
+              <p>Want to see exactly what your lookbooks will look like on your store? Use the new Live Preview tab to test our new Masonry and Mosaic layouts before publishing.</p>
+            </CalloutCard>
+          </Layout.Section>
         {!isPro && (
           <Layout.Section>
             <Card padding="400">
@@ -179,6 +235,7 @@ export default function Index() {
           </Card>
         </Layout.Section>
       </Layout>
+      </BlockStack>
     </Page>
   );
 }
