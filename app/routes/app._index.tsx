@@ -42,9 +42,9 @@ export async function loader({ request }: any) {
     where: { image: { lookbook: { shop: session.shop } } }
   });
   
-  const aggregates = await prisma.lookbook.aggregate({
+  const aggregates = await (prisma.lookbook.aggregate as any)({
     where: { shop: session.shop },
-    _sum: { views: true, clicks: true } as any
+    _sum: { views: true, clicks: true }
   });
   
   const stats = {
