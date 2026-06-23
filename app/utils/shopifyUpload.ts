@@ -91,7 +91,38 @@ export async function uploadFileToShopify(admin: any, file: File) {
   });
 
   const fileCreateData = await fileCreateResponse.json();
-  const createdFile = fileCreateData.data.fileCreate.files[0];
+  let createdFile = fileCreateData.data.fileCreate.files[0];
+
+  if (createdFile && (createdFile.fileStatus === "PROCESSING" || createdFile.fileStatus === "UPLOADED" || !createdFile.image?.url)) {
+    // Poll Shopify up to 10 times (10 seconds) until the image is processed and URL is available
+    for (let i = 0; i < 10; i++) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const checkQuery = `
+        query node($id: ID!) {
+          node(id: $id) {
+            ... on MediaImage {
+              id
+              fileStatus
+              image {
+                url
+              }
+            }
+          }
+        }
+      `;
+      const checkRes = await admin.graphql(checkQuery, {
+        variables: { id: createdFile.id }
+      });
+      const checkData = await checkRes.json();
+      
+      if (checkData.data?.node) {
+        createdFile = checkData.data.node;
+        if (createdFile.fileStatus === "READY" && createdFile.image?.url) {
+          break;
+        }
+      }
+    }
+  }
 
   return createdFile;
 }
