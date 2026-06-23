@@ -28,6 +28,25 @@ export async function loader({ request }: any) {
 export async function action({ request }: any) {
   const { billing } = await authenticate.admin(request);
   
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "downgrade") {
+    const billingCheck = await billing.check({
+      plans: ["Pro Plan"],
+      isTest: true,
+    });
+    const subscription = billingCheck.appSubscriptions?.[0];
+    if (subscription) {
+      await billing.cancel({
+        subscriptionId: subscription.id,
+        isTest: true,
+        prorate: true,
+      });
+    }
+    return null;
+  }
+
   try {
     await billing.request({
       plan: "Pro Plan",
@@ -43,7 +62,7 @@ export async function action({ request }: any) {
         if (url) return { confirmationUrl: url };
       }
     }
-    // If it's not the expected 401 response, or it's another error, rethrow it
+    // If it's not the expected response, or it's another error, rethrow it
     throw error;
   }
   
@@ -62,7 +81,11 @@ export default function Pricing() {
   }, [actionData]);
 
   const handleUpgrade = () => {
-    submit({}, { method: "post" });
+    submit({ intent: "upgrade" }, { method: "post" });
+  };
+
+  const handleDowngrade = () => {
+    submit({ intent: "downgrade" }, { method: "post" });
   };
 
   return (
@@ -87,7 +110,7 @@ export default function Pricing() {
                 </List>
               </div>
 
-              <Button disabled={!isPro} onClick={() => { /* Handle downgrade if necessary */ }}>
+              <Button disabled={!isPro} onClick={handleDowngrade}>
                 {isPro ? "Downgrade" : "Current Plan"}
               </Button>
             </BlockStack>
