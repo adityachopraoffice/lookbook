@@ -287,41 +287,45 @@ export default function Preview() {
 
             {/* Preview Render */}
             <div className="lb-container" style={{ backgroundColor: "#fafafa", padding: "20px", border: "1px dashed #ccc" }}>
-              {!selectedLookbook ? (
-                <Text as="p" tone="subdued">No lookbooks available. Create one first!</Text>
-              ) : selectedLookbook.images.length === 0 ? (
-                <Text as="p" tone="subdued">This lookbook has no images. Add some images to see the preview.</Text>
-              ) : (
-                <div className={containerClass}>
-                  {selectedLookbook.images.map((image: any) => (
-                    <div key={image.id} className="lb-image-wrapper">
-                      <img src={image.imageUrl} alt="Lookbook Preview" />
-                      {image.pins.map((pin: any) => {
-                        const product = productData[pin.productId];
-                        if (!product) return null;
-                        const price = product.priceRangeV2.minVariantPrice;
-                        return (
-                          <div 
-                            key={pin.id} 
-                            className="lb-hotspot" 
-                            style={{ left: `${pin.xPercent}%`, top: `${pin.yPercent}%`, backgroundColor: hotspotColor }}
-                            tabIndex={0}
-                          >
-                            <div className="lb-popover">
-                              {product.featuredImage?.url && <img src={product.featuredImage.url} alt={product.title} />}
-                              <div className="lb-popover-title">{product.title}</div>
-                              <div className="lb-popover-price">{formatMoney(price)}</div>
-                              <button className="lb-add-btn" onClick={(e) => { e.preventDefault(); alert("Add to cart simulated!"); }}>
-                                Add to cart
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
+              {(!selectedLookbook || selectedLookbook.images.length === 0) && (
+                <div style={{ marginBottom: "20px" }}>
+                  <Text as="p" tone="subdued">You haven't added any images yet. Here is a preview of the layout using sample images.</Text>
                 </div>
               )}
+              <div className={containerClass}>
+                {(selectedLookbook?.images?.length > 0 ? selectedLookbook.images : [
+                  { id: "p1", imageUrl: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80", pins: [] },
+                  { id: "p2", imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80", pins: [] },
+                  { id: "p3", imageUrl: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80", pins: [] },
+                  { id: "p4", imageUrl: "https://images.unsplash.com/photo-1485230895905-ef0824b2605f?w=800&q=80", pins: [] },
+                ]).map((image: any) => (
+                  <div key={image.id} className="lb-image-wrapper">
+                    <img src={image.imageUrl} alt="Lookbook Preview" />
+                    {image.pins && image.pins.map((pin: any) => {
+                      const product = productData[pin.productId];
+                      if (!product) return null;
+                      const price = product.priceRangeV2.minVariantPrice;
+                      return (
+                        <div 
+                          key={pin.id} 
+                          className="lb-hotspot" 
+                          style={{ left: `${pin.xPercent}%`, top: `${pin.yPercent}%`, backgroundColor: hotspotColor }}
+                          tabIndex={0}
+                        >
+                          <div className="lb-popover">
+                            {product.featuredImage?.url && <img src={product.featuredImage.url} alt={product.title} />}
+                            <div className="lb-popover-title">{product.title}</div>
+                            <div className="lb-popover-price">{formatMoney(price)}</div>
+                            <button className="lb-add-btn" onClick={(e) => { e.preventDefault(); alert("Add to cart simulated!"); }}>
+                              Add to cart
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
 
           </Card>
