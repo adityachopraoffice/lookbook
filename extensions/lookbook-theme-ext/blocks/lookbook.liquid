@@ -235,6 +235,21 @@
       html += `</div>`;
       container.innerHTML = html;
 
+      // Auto-advance slideshow
+      if (lookbook.layout === "SLIDESHOW") {
+        const slideshow = container.querySelector('.lb-slideshow');
+        if (slideshow) {
+          setInterval(() => {
+            // Check if we reached the end
+            if (slideshow.scrollLeft + slideshow.clientWidth >= slideshow.scrollWidth - 10) {
+              slideshow.scrollTo({ left: 0, behavior: 'smooth' }); // Loop back
+            } else {
+              slideshow.scrollBy({ left: slideshow.clientWidth, behavior: 'smooth' }); // Next slide
+            }
+          }, 3000);
+        }
+      }
+
       // Add to cart AJAX
       window.lbAddToCart = async function(form) {
         const btn = form.querySelector('button');

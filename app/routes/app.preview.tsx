@@ -73,6 +73,23 @@ export default function Preview() {
     }
   }, [selectedLookbook]);
 
+  useEffect(() => {
+    let interval: any;
+    if (activeLayout === "SLIDESHOW") {
+      interval = setInterval(() => {
+        const slideshow = document.querySelector('.lb-slideshow');
+        if (slideshow) {
+          if (slideshow.scrollLeft + slideshow.clientWidth >= slideshow.scrollWidth - 10) {
+            slideshow.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            slideshow.scrollBy({ left: slideshow.clientWidth, behavior: 'smooth' });
+          }
+        }
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [activeLayout, selectedLookbook]);
+
   const handleLookbookChange = (id: string) => {
     submit({ id }, { method: "get" });
   };
