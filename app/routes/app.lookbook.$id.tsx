@@ -280,7 +280,7 @@ export default function LookbookForm() {
                                   <Thumbnail source={imageUrl || ""} alt="Lookbook image" />
                                   <Text variant="bodyMd" fontWeight="bold" as="span">Image {item.position + 1}</Text>
                                 </InlineStack>
-                                <Badge>{pins?.length || 0} hotspots</Badge>
+                                <Badge>{`${pins?.length || 0} hotspots`}</Badge>
                               </InlineStack>
                             </ResourceItem>
                           );
@@ -357,7 +357,7 @@ export default function LookbookForm() {
           open={isEditorOpen}
           onClose={() => setIsEditorOpen(false)}
           title="Edit Hotspots"
-          large
+          size="large"
         >
           <Modal.Section>
             <Text as="p" tone="subdued">Click anywhere on the image to drop a pin and link a product.</Text>
