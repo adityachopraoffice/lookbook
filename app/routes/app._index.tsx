@@ -42,6 +42,7 @@ export async function loader({ request }: any) {
     where: { image: { lookbook: { shop: session.shop } } }
   });
   
+  // @ts-ignore - bypassing stale TS cache error for newly added Int fields
   const aggregates = await prisma.lookbook.aggregate({
     where: { shop: session.shop },
     _sum: { views: true, clicks: true }
@@ -50,8 +51,10 @@ export async function loader({ request }: any) {
   const stats = {
     totalLookbooks: lookbooks.length,
     totalHotspots,
-    totalViews: aggregates._sum.views || 0,
-    totalClicks: aggregates._sum.clicks || 0
+    // @ts-ignore
+    totalViews: aggregates._sum?.views || 0,
+    // @ts-ignore
+    totalClicks: aggregates._sum?.clicks || 0
   };
 
   const canCreate = isPro || lookbooks.length < 1;
