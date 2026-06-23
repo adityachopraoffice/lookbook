@@ -86,7 +86,7 @@ export default function Index() {
   ];
 
   const rowMarkup = lookbooks.map(
-    ({ id, title, status, images, updatedAt }, index) => (
+    ({ id, title, status, images, updatedAt }: any, index: number) => (
       <IndexTable.Row
         id={id}
         key={id}
