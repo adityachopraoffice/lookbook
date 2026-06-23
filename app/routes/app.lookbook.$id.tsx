@@ -19,8 +19,10 @@ export async function loader({ request, params }: any) {
   const defaultLayout = settings?.defaultLayout || "GRID";
 
   if (id === "new") {
+    const url = new URL(request.url);
+    const layout = url.searchParams.get("layout") || defaultLayout;
     return {
-      lookbook: { title: "", status: "DRAFT", layout: defaultLayout, images: [] },
+      lookbook: { title: "", status: "DRAFT", layout: layout, images: [] },
       isNew: true
     };
   }
