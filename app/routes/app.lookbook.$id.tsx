@@ -335,6 +335,9 @@ export default function LookbookForm() {
                     { label: "Grid (Default)", value: "GRID" },
                     { label: "Hero Image", value: "HERO" },
                     { label: "Slideshow", value: "SLIDESHOW" },
+                    { label: "Masonry Grid", value: "MASONRY" },
+                    { label: "Vertical Stack", value: "STACK" },
+                    { label: "Featured Mosaic", value: "MOSAIC" },
                   ]}
                   value={layout}
                   onChange={setLayout}

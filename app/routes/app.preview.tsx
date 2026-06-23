@@ -85,6 +85,9 @@ export default function Preview() {
   let containerClass = "lb-grid";
   if (activeLayout === "HERO") containerClass = "lb-hero";
   if (activeLayout === "SLIDESHOW") containerClass = "lb-slideshow";
+  if (activeLayout === "MASONRY") containerClass = "lb-masonry";
+  if (activeLayout === "STACK") containerClass = "lb-stack";
+  if (activeLayout === "MOSAIC") containerClass = "lb-mosaic";
 
   return (
     <Page title="Live Preview" backAction={{ content: "Lookbooks", onAction: () => navigate("/app") }}>
@@ -112,6 +115,9 @@ export default function Preview() {
                       { label: "Grid", value: "GRID" },
                       { label: "Hero Image", value: "HERO" },
                       { label: "Slideshow", value: "SLIDESHOW" },
+                      { label: "Masonry Grid", value: "MASONRY" },
+                      { label: "Vertical Stack", value: "STACK" },
+                      { label: "Featured Mosaic", value: "MOSAIC" },
                     ]}
                     value={activeLayout}
                     onChange={setActiveLayout}
@@ -163,6 +169,33 @@ export default function Preview() {
                 width: 100%;
                 height: auto;
                 display: block;
+              }
+              .lb-masonry {
+                column-count: 3;
+                column-gap: 20px;
+              }
+              @media (max-width: 768px) { .lb-masonry { column-count: 2; } }
+              @media (max-width: 480px) { .lb-masonry { column-count: 1; } }
+              .lb-masonry .lb-image-wrapper {
+                break-inside: avoid;
+                margin-bottom: 20px;
+              }
+              .lb-stack {
+                display: flex;
+                flex-direction: column;
+                gap: 40px;
+                align-items: center;
+              }
+              .lb-stack .lb-image-wrapper {
+                max-width: 800px;
+              }
+              .lb-mosaic {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+              }
+              .lb-mosaic .lb-image-wrapper:first-child {
+                grid-column: 1 / -1;
               }
               .lb-hotspot {
                 position: absolute;

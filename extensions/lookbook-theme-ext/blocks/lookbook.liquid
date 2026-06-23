@@ -64,6 +64,33 @@
   height: auto;
   display: block;
 }
+.lb-masonry {
+  column-count: 3;
+  column-gap: 20px;
+}
+@media (max-width: 768px) { .lb-masonry { column-count: 2; } }
+@media (max-width: 480px) { .lb-masonry { column-count: 1; } }
+.lb-masonry .lb-image-wrapper {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+.lb-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+}
+.lb-stack .lb-image-wrapper {
+  max-width: 800px;
+}
+.lb-mosaic {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.lb-mosaic .lb-image-wrapper:first-child {
+  grid-column: 1 / -1;
+}
 .lb-hotspot {
   position: absolute;
   width: 24px;
@@ -168,6 +195,9 @@
       let containerClass = "lb-grid";
       if (lookbook.layout === "HERO") containerClass = "lb-hero";
       if (lookbook.layout === "SLIDESHOW") containerClass = "lb-slideshow";
+      if (lookbook.layout === "MASONRY") containerClass = "lb-masonry";
+      if (lookbook.layout === "STACK") containerClass = "lb-stack";
+      if (lookbook.layout === "MOSAIC") containerClass = "lb-mosaic";
 
       html += `<div class="${containerClass}">`;
 
