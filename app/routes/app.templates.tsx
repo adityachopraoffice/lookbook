@@ -81,7 +81,7 @@ export default function Templates() {
                   
                   <div style={{ marginTop: "10px" }}>
                     <InlineStack align="space-between" blockAlign="center">
-                      <Button onClick={() => navigate(`/app/preview`)} variant="plain">Live Preview</Button>
+                      <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
                       {!isPro && template.isPro ? (
                         <Button variant="primary" tone="success" onClick={() => navigate('/app/pricing')}>Upgrade</Button>
                       ) : (

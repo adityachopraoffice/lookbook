@@ -55,23 +55,26 @@ export async function loader({ request }: any) {
     lookbooks,
     selectedLookbook,
     productData,
-    hotspotColor: settings?.hotspotColor || "#000000"
+    hotspotColor: settings?.hotspotColor || "#000000",
+    initialLayoutParam: url.searchParams.get("layout")
   });
 }
 
 export default function Preview() {
-  const { lookbooks, selectedLookbook, productData, hotspotColor } = useLoaderData<any>();
+  const { lookbooks, selectedLookbook, productData, hotspotColor, initialLayoutParam } = useLoaderData<any>();
   const submit = useSubmit();
   const navigate = useNavigate();
 
   // Local state for toggling layout without saving
-  const [activeLayout, setActiveLayout] = useState(selectedLookbook?.layout || "GRID");
+  const [activeLayout, setActiveLayout] = useState(initialLayoutParam || selectedLookbook?.layout || "GRID");
 
   useEffect(() => {
-    if (selectedLookbook) {
+    if (initialLayoutParam) {
+      setActiveLayout(initialLayoutParam);
+    } else if (selectedLookbook) {
       setActiveLayout(selectedLookbook.layout);
     }
-  }, [selectedLookbook]);
+  }, [selectedLookbook, initialLayoutParam]);
 
   useEffect(() => {
     let interval: any;
