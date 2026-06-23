@@ -20,7 +20,7 @@ const TEMPLATES = [
   {
     id: "HERO",
     title: "Hero Image",
-    description: "Full width images stacked vertically. Great for high resolution photography.",
+    description: "Displays only your very first image at full width. Perfect for a single striking banner.",
     isPro: false,
     image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
   },

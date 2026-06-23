@@ -168,6 +168,9 @@ export default function Preview() {
               .lb-hero {
                 width: 100%;
               }
+              .lb-hero .lb-image-wrapper:not(:first-child) {
+                display: none;
+              }
               .lb-slideshow {
                 display: flex;
                 overflow-x: auto;
