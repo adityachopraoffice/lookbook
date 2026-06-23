@@ -2,7 +2,7 @@
 
 client_id = "45978eaedb9a66c4bc7c5e8dfb8c8c67"
 name = "lookbook"
-application_url = "https://lookbook-topaz-phi.vercel.app"
+application_url = "https://lookbook.hostnestic.online"
 embedded = true
 
 [access_scopes]
@@ -46,15 +46,15 @@ api_version = "2026-07"
 
 [auth]
 redirect_urls = [
-  "https://lookbook-topaz-phi.vercel.app/api/auth",
-  "https://lookbook-topaz-phi.vercel.app/auth/callback",
-  "https://lookbook-topaz-phi.vercel.app/auth/shopify/callback"
+  "https://lookbook.hostnestic.online/api/auth",
+  "https://lookbook.hostnestic.online/auth/callback",
+  "https://lookbook.hostnestic.online/auth/shopify/callback"
 ]
 
 [build]
 automatically_update_urls_on_dev = true
 
 [app_proxy]
-url = "https://lookbook-topaz-phi.vercel.app/api/proxy"
+url = "https://lookbook.hostnestic.online/api/proxy"
 subpath = "lookbook"
 prefix = "apps"
