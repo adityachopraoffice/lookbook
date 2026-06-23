@@ -148,6 +148,71 @@ export default function Index() {
     )
   );
 
+  const customStyles = `
+    .stat-card {
+      padding: 24px;
+      border-radius: 12px;
+      color: white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      height: 100%;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -10px rgba(0,0,0,0.3);
+    }
+    .stat-lookbooks { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .stat-hotspots { background: linear-gradient(135deg, #f43f5e, #fb923c); }
+    .stat-views { background: linear-gradient(135deg, #10b981, #3b82f6); }
+    
+    .stat-title { font-size: 15px; opacity: 0.9; margin-bottom: 8px; font-weight: 500; }
+    .stat-value { font-size: 36px; font-weight: bold; line-height: 1; }
+
+    .live-preview-banner {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      border-radius: 16px;
+      padding: 32px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 10px 30px -15px rgba(139, 92, 246, 0.3);
+      transition: transform 0.3s ease;
+    }
+    .live-preview-banner:hover {
+      transform: translateY(-2px);
+    }
+    .live-preview-banner::after {
+      content: "";
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+    .banner-content { position: relative; z-index: 1; max-width: 600px; }
+    .banner-title { font-size: 24px; font-weight: bold; margin-bottom: 12px; }
+    .banner-text { font-size: 15px; color: #cbd5e1; margin-bottom: 24px; line-height: 1.6; }
+    .banner-btn {
+      background: linear-gradient(to right, #8b5cf6, #38bdf8);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    .banner-btn:hover { 
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+    }
+  `;
+
   return (
     <Page
       title="Dashboard"
@@ -158,42 +223,35 @@ export default function Index() {
         disabled: !canCreate && isPro
       }}
     >
+      <style dangerouslySetInnerHTML={{ __html: customStyles }} />
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
             <InlineGrid columns={3} gap="400">
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h3" variant="headingSm" tone="subdued">Total Lookbooks</Text>
-                  <Text as="p" variant="headingXl">{stats?.totalLookbooks || 0}</Text>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h3" variant="headingSm" tone="subdued">Total Hotspots</Text>
-                  <Text as="p" variant="headingXl">{stats?.totalHotspots || 0}</Text>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h3" variant="headingSm" tone="subdued">Storefront Views</Text>
-                  <Text as="p" variant="headingXl">{stats?.totalViews || 0}</Text>
-                </BlockStack>
-              </Card>
+              <div className="stat-card stat-lookbooks">
+                <div className="stat-title">Total Lookbooks</div>
+                <div className="stat-value">{stats?.totalLookbooks || 0}</div>
+              </div>
+              <div className="stat-card stat-hotspots">
+                <div className="stat-title">Total Hotspots</div>
+                <div className="stat-value">{stats?.totalHotspots || 0}</div>
+              </div>
+              <div className="stat-card stat-views">
+                <div className="stat-title">Storefront Views</div>
+                <div className="stat-value">{stats?.totalViews || 0}</div>
+              </div>
             </InlineGrid>
           </Layout.Section>
 
           <Layout.Section>
-            <CalloutCard
-              title="Test your layouts with Live Preview"
-              illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10bf5670fcb000721245c4349.svg"
-              primaryAction={{
-                content: 'Try Live Preview',
-                onAction: () => navigate('/app/preview'),
-              }}
-            >
-              <p>Want to see exactly what your lookbooks will look like on your store? Use the new Live Preview tab to test our new Masonry and Mosaic layouts before publishing.</p>
-            </CalloutCard>
+            <div className="live-preview-banner">
+              <div className="banner-content">
+                <div className="banner-title">Test your layouts with Live Preview</div>
+                <div className="banner-text">Want to see exactly what your lookbooks will look like on your store? Use the new Live Preview tab to test our new Masonry and Mosaic layouts before publishing.</div>
+                <button className="banner-btn" onClick={() => navigate('/app/preview')}>Try Live Preview</button>
+              </div>
+              <img src="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10bf5670fcb000721245c4349.svg" alt="Preview" style={{ height: "150px", position: "relative", zIndex: 1, opacity: 0.9 }} />
+            </div>
           </Layout.Section>
         {!isPro && (
           <Layout.Section>
