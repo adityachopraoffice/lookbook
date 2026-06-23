@@ -41,7 +41,7 @@ export async function loader({ request }: any) {
 }
 
 export default function Analytics() {
-  const { totalViews, totalClicks, lookbookData } = useLoaderData<typeof loader>();
+  const { totalViews, totalClicks, lookbookData } = useLoaderData<any>();
 
   const rows = lookbookData.map((lb: any) => [
     lb.title,
