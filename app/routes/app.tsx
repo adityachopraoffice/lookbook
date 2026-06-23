@@ -9,6 +9,14 @@ import { authenticate } from "../shopify.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "ui-nav-menu": any;
+    }
+  }
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
