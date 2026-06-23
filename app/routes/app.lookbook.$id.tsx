@@ -62,6 +62,12 @@ export async function action({ request, params }: any) {
     return redirect("/app");
   }
 
+  if (intent === "deleteImage") {
+    const imageId = formData.get("imageId") as string;
+    await prisma.lookbookImage.delete({ where: { id: imageId } });
+    return json({ success: true });
+  }
+
   if (intent === "uploadImage") {
     const file = formData.get("file") as File;
     if (!file || !file.name) return json({ error: "No file provided" }, { status: 400 });
@@ -229,6 +235,14 @@ export default function LookbookForm() {
     fetcher.submit(formData, { method: "post" });
   };
 
+  const deleteImage = (imageId: string, e: any) => {
+    e.stopPropagation();
+    const formData = new FormData();
+    formData.append("intent", "deleteImage");
+    formData.append("imageId", imageId);
+    fetcher.submit(formData, { method: "post" });
+  };
+
   // Update activeImage when fetcher data returns (e.g. pin saved)
   useEffect(() => {
     if (fetcher.state === "idle" && activeImage) {
@@ -280,7 +294,10 @@ export default function LookbookForm() {
                                   <Thumbnail source={imageUrl || ""} alt="Lookbook image" />
                                   <Text variant="bodyMd" fontWeight="bold" as="span">Image {item.position + 1}</Text>
                                 </InlineStack>
-                                <Badge>{`${pins?.length || 0} hotspots`}</Badge>
+                                <InlineStack wrap={false} gap="400" blockAlign="center">
+                                  <Badge>{`${pins?.length || 0} hotspots`}</Badge>
+                                  <Button tone="critical" variant="plain" icon={DeleteIcon} onClick={(e: any) => deleteImage(id, e)} accessibilityLabel="Delete image" />
+                                </InlineStack>
                               </InlineStack>
                             </ResourceItem>
                           );
