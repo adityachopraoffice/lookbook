@@ -250,7 +250,18 @@ export default function Index() {
                 <div className="banner-text">Want to see exactly what your lookbooks will look like on your store? Use the new Live Preview tab to test our new Masonry and Mosaic layouts before publishing.</div>
                 <button className="banner-btn" onClick={() => navigate('/app/preview')}>Try Live Preview</button>
               </div>
-              <img src="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10bf5670fcb000721245c4349.svg" alt="Preview" style={{ height: "150px", position: "relative", zIndex: 1, opacity: 0.9 }} />
+              <svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="url(#preview-gradient)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ position: "relative", zIndex: 1, opacity: 0.8 }}>
+                <defs>
+                  <linearGradient id="preview-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#a78bfa" />
+                    <stop offset="100%" stopColor="#38bdf8" />
+                  </linearGradient>
+                </defs>
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+                <line x1="2" y1="7" x2="22" y2="7"></line>
+              </svg>
             </div>
           </Layout.Section>
         {!isPro && (
