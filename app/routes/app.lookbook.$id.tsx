@@ -235,8 +235,7 @@ export default function LookbookForm() {
     fetcher.submit(formData, { method: "post" });
   };
 
-  const deleteImage = (imageId: string, e: any) => {
-    e.stopPropagation();
+  const deleteImage = (imageId: string) => {
     const formData = new FormData();
     formData.append("intent", "deleteImage");
     formData.append("imageId", imageId);
@@ -296,7 +295,9 @@ export default function LookbookForm() {
                                 </InlineStack>
                                 <InlineStack wrap={false} gap="400" blockAlign="center">
                                   <Badge>{`${pins?.length || 0} hotspots`}</Badge>
-                                  <Button tone="critical" variant="plain" icon={DeleteIcon} onClick={(e: any) => deleteImage(id, e)} accessibilityLabel="Delete image" />
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    <Button tone="critical" variant="plain" icon={DeleteIcon} onClick={() => deleteImage(id)} accessibilityLabel="Delete image" />
+                                  </div>
                                 </InlineStack>
                               </InlineStack>
                             </ResourceItem>
