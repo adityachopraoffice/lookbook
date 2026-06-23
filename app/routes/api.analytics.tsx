@@ -17,17 +17,17 @@ export async function action({ request }: any) {
     const { action, lookbookId, pinId } = data;
 
     if (action === "view" && lookbookId) {
-      await prisma.lookbook.update({
+      await (prisma.lookbook as any).update({
         where: { id: lookbookId },
         data: { views: { increment: 1 } },
       });
     } else if (action === "click" && lookbookId && pinId) {
       await prisma.$transaction([
-        prisma.lookbook.update({
+        (prisma.lookbook as any).update({
           where: { id: lookbookId },
           data: { clicks: { increment: 1 } },
         }),
-        prisma.pin.update({
+        (prisma.pin as any).update({
           where: { id: pinId },
           data: { clicks: { increment: 1 } },
         }),
