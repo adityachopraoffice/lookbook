@@ -1,0 +1,237 @@
+{% schema %}
+{
+  "name": "Lookbook",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "lookbook_id",
+      "label": "Lookbook ID",
+      "info": "Enter the ID of the lookbook from the app dashboard."
+    },
+    {
+      "type": "color",
+      "id": "hotspot_color",
+      "label": "Hotspot Dot Color",
+      "default": "#000000"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="lb-container" 
+     data-lookbook-id="{{ block.settings.lookbook_id }}" 
+     data-hotspot-color="{{ block.settings.hotspot_color }}"
+     id="lookbook-{{ block.id }}">
+  <!-- The JS will inject the lookbook here -->
+  {% if block.settings.lookbook_id == blank %}
+    <p style="text-align:center; padding: 20px;">Please enter a Lookbook ID in the block settings.</p>
+  {% endif %}
+</div>
+
+<style>
+.lb-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  font-family: inherit;
+}
+.lb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.lb-hero {
+  width: 100%;
+}
+.lb-slideshow {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  scroll-snap-type: x mandatory;
+}
+.lb-slideshow .lb-image-wrapper {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+.lb-image-wrapper {
+  position: relative;
+  width: 100%;
+}
+.lb-image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.lb-hotspot {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid white;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+  z-index: 10;
+}
+.lb-hotspot:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+.lb-popover {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 10px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  width: 200px;
+  display: none;
+  z-index: 20;
+}
+.lb-hotspot:hover .lb-popover,
+.lb-hotspot:focus .lb-popover {
+  display: block;
+}
+.lb-popover img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.lb-popover-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+.lb-popover-price {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 8px 0;
+}
+.lb-add-btn {
+  width: 100%;
+  padding: 8px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.lb-add-btn:hover {
+  background: #333;
+}
+.lb-view-link {
+  display: block;
+  text-align: center;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  text-decoration: underline;
+}
+</style>
+
+<script>
+(function() {
+  const containerId = "lookbook-{{ block.id }}";
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const lookbookId = container.getAttribute("data-lookbook-id");
+  const hotspotColor = container.getAttribute("data-hotspot-color") || "#000000";
+
+  if (!lookbookId) return;
+
+  // Format money helper
+  const formatMoney = (cents) => {
+    return "$" + (cents / 100).toFixed(2);
+  };
+
+  const init = async () => {
+    try {
+      // Use app proxy to fetch lookbook data
+      const res = await fetch(`/apps/lookbook?id=${lookbookId}`);
+      if (!res.ok) throw new Error("Lookbook not found");
+      const data = await res.json();
+      const lookbook = data.lookbook;
+      const productData = data.productData;
+      // Prefer block settings color, fallback to app settings color
+      const finalHotspotColor = (hotspotColor && hotspotColor !== "#000000" && hotspotColor !== "rgba(0,0,0,0)") ? hotspotColor : (data.hotspotColor || "#000000");
+
+      let html = "";
+      let containerClass = "lb-grid";
+      if (lookbook.layout === "HERO") containerClass = "lb-hero";
+      if (lookbook.layout === "SLIDESHOW") containerClass = "lb-slideshow";
+
+      html += `<div class="${containerClass}">`;
+
+      for (const image of lookbook.images) {
+        html += `<div class="lb-image-wrapper">
+          <img src="${image.imageUrl}" alt="Lookbook" loading="lazy" />`;
+        
+        for (const pin of image.pins) {
+          const product = productData[pin.productId];
+          if (!product) continue;
+          
+          const variantIdRaw = product.variants.edges[0]?.node?.id.split("/").pop();
+          const imgUrl = product.featuredImage ? product.featuredImage.url : "";
+          const price = product.priceRangeV2.minVariantPrice;
+          const priceFormatted = new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currencyCode }).format(price.amount);
+
+          html += `
+            <div class="lb-hotspot" style="left: ${pin.xPercent}%; top: ${pin.yPercent}%; background-color: ${finalHotspotColor};" tabindex="0">
+              <div class="lb-popover">
+                ${imgUrl ? `<img src="${imgUrl}" alt="${product.title}" />` : ''}
+                <div class="lb-popover-title">${product.title}</div>
+                <div class="lb-popover-price">${priceFormatted}</div>
+                <form method="post" action="/cart/add" class="lb-add-form" onsubmit="event.preventDefault(); window.lbAddToCart(this);">
+                  <input type="hidden" name="id" value="${variantIdRaw}" />
+                  <button type="submit" class="lb-add-btn">Add to cart</button>
+                </form>
+                <a href="/products/${product.handle}" class="lb-view-link">View product</a>
+              </div>
+            </div>
+          `;
+        }
+        html += `</div>`;
+      }
+      
+      html += `</div>`;
+      container.innerHTML = html;
+
+      // Add to cart AJAX
+      window.lbAddToCart = async function(form) {
+        const btn = form.querySelector('button');
+        const prevText = btn.innerText;
+        btn.innerText = "Adding...";
+        btn.disabled = true;
+        try {
+          const formData = new FormData(form);
+          const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+            method: 'POST',
+            body: formData
+          });
+          if (!response.ok) throw new Error("Failed to add to cart");
+          btn.innerText = "Added!";
+          setTimeout(() => { btn.innerText = prevText; btn.disabled = false; }, 2000);
+        } catch (e) {
+          btn.innerText = "Error";
+          setTimeout(() => { btn.innerText = prevText; btn.disabled = false; }, 2000);
+        }
+      };
+
+    } catch (err) {
+      console.error("Lookbook error:", err);
+      container.innerHTML = "<p>Error loading lookbook.</p>";
+    }
+  };
+
+  init();
+})();
+</script>
