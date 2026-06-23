@@ -40,6 +40,8 @@ model Lookbook {
   title       String
   status      String          @default("DRAFT") // 'DRAFT' or 'PUBLISHED'
   layout      String          @default("GRID")  // 'HERO', 'GRID', or 'SLIDESHOW'
+  views       Int             @default(0)
+  clicks      Int             @default(0)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   images      LookbookImage[]
@@ -62,6 +64,7 @@ model Pin {
   yPercent      Float         // 0-100
   productId     String        // Shopify product GID
   variantId     String?       // Shopify variant GID, optional
+  clicks        Int           @default(0)
 }
 
 model ShopSettings {

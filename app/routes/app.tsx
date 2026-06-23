@@ -24,6 +24,7 @@ export default function App() {
       <PolarisProvider i18n={{}}>
         <ui-nav-menu>
           <a href="/app">Lookbooks</a>
+          <a href="/app/analytics">Analytics</a>
           <a href="/app/settings">Settings</a>
           <a href="/app/pricing">Pricing</a>
         </ui-nav-menu>
