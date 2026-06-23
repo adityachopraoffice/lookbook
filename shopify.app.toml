@@ -2,7 +2,7 @@
 
 client_id = "45978eaedb9a66c4bc7c5e8dfb8c8c67"
 name = "lookbook"
-application_url = "https://example.com"
+application_url = "https://lookbook-lv07kb0k7-aditya-chopra-s-projects.vercel.app"
 embedded = true
 
 [access_scopes]
@@ -45,13 +45,17 @@ api_version = "2026-07"
   topics = [ "app/scopes_update" ]
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://lookbook-lv07kb0k7-aditya-chopra-s-projects.vercel.app/api/auth",
+  "https://lookbook-lv07kb0k7-aditya-chopra-s-projects.vercel.app/auth/callback",
+  "https://lookbook-lv07kb0k7-aditya-chopra-s-projects.vercel.app/auth/shopify/callback"
+]
 
 [build]
 include_config_on_deploy = true
 automatically_update_urls_on_dev = true
 
 [app_proxy]
-url = "https://example.com/api/proxy"
+url = "https://lookbook-lv07kb0k7-aditya-chopra-s-projects.vercel.app/api/proxy"
 subpath = "lookbook"
 prefix = "apps"
