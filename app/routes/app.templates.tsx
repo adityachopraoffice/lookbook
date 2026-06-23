@@ -15,42 +15,42 @@ const TEMPLATES = [
     title: "Grid (Default)",
     description: "A standard responsive grid layout. Clean and professional.",
     isPro: false,
-    image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+    image: "data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='120' fill='%23f4f6f8' /%3E%3Crect x='40' y='20' width='55' height='35' rx='4' fill='%23cbd5e1' /%3E%3Crect x='105' y='20' width='55' height='35' rx='4' fill='%23cbd5e1' /%3E%3Crect x='40' y='65' width='55' height='35' rx='4' fill='%23cbd5e1' /%3E%3Crect x='105' y='65' width='55' height='35' rx='4' fill='%23cbd5e1' /%3E%3C/svg%3E"
   },
   {
     id: "HERO",
     title: "Hero Image",
     description: "Displays only your very first image at full width. Perfect for a single striking banner.",
     isPro: false,
-    image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+    image: "data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='120' fill='%23f4f6f8' /%3E%3Crect x='20' y='20' width='160' height='80' rx='4' fill='%23cbd5e1' /%3E%3C/svg%3E"
   },
   {
     id: "SLIDESHOW",
     title: "Slideshow",
     description: "An auto-advancing horizontal carousel. Saves vertical space.",
     isPro: false,
-    image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+    image: "data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='120' fill='%23f4f6f8' /%3E%3Crect x='-30' y='20' width='60' height='80' rx='4' fill='%23cbd5e1' opacity='0.5' /%3E%3Crect x='40' y='20' width='120' height='80' rx='4' fill='%23cbd5e1' /%3E%3Crect x='170' y='20' width='60' height='80' rx='4' fill='%23cbd5e1' opacity='0.5' /%3E%3C/svg%3E"
   },
   {
     id: "MASONRY",
     title: "Masonry Grid",
     description: "Pinterest style grid that perfectly fits images of different heights without gaps.",
     isPro: true,
-    image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+    image: "data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='120' fill='%23f4f6f8' /%3E%3Crect x='40' y='15' width='35' height='50' rx='4' fill='%23cbd5e1' /%3E%3Crect x='40' y='75' width='35' height='30' rx='4' fill='%23cbd5e1' /%3E%3Crect x='85' y='15' width='35' height='30' rx='4' fill='%23cbd5e1' /%3E%3Crect x='85' y='55' width='35' height='50' rx='4' fill='%23cbd5e1' /%3E%3Crect x='130' y='15' width='35' height='40' rx='4' fill='%23cbd5e1' /%3E%3Crect x='130' y='65' width='35' height='40' rx='4' fill='%23cbd5e1' /%3E%3C/svg%3E"
   },
   {
     id: "STACK",
     title: "Vertical Stack",
     description: "A centered, spaced vertical stack. Perfect for storytelling.",
     isPro: true,
-    image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+    image: "data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='120' fill='%23f4f6f8' /%3E%3Crect x='50' y='10' width='100' height='45' rx='4' fill='%23cbd5e1' /%3E%3Crect x='50' y='65' width='100' height='45' rx='4' fill='%23cbd5e1' /%3E%3C/svg%3E"
   },
   {
     id: "MOSAIC",
     title: "Featured Mosaic",
     description: "Features the first image at full size, with the rest forming a smaller grid below.",
     isPro: true,
-    image: "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
+    image: "data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='200' height='120' fill='%23f4f6f8' /%3E%3Crect x='40' y='15' width='120' height='50' rx='4' fill='%23cbd5e1' /%3E%3Crect x='40' y='75' width='55' height='30' rx='4' fill='%23cbd5e1' /%3E%3Crect x='105' y='75' width='55' height='30' rx='4' fill='%23cbd5e1' /%3E%3C/svg%3E"
   }
 ];
 
