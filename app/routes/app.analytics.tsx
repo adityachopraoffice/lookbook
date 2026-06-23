@@ -16,7 +16,7 @@ import prisma from "../db.server";
 export async function loader({ request }: any) {
   const { session } = await authenticate.admin(request);
 
-  const lookbooks = await prisma.lookbook.findMany({
+  const lookbooks = await (prisma.lookbook as any).findMany({
     where: { shop: session.shop },
     orderBy: { views: "desc" }
   });
