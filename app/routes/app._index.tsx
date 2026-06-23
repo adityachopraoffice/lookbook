@@ -40,9 +40,28 @@ export async function loader({ request }: any) {
   return { lookbooks, isPro, canCreate };
 }
 
+export async function action({ request }: any) {
+  const { session } = await authenticate.admin(request);
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "delete") {
+    const ids = JSON.parse(formData.get("ids") as string);
+    await prisma.lookbook.deleteMany({
+      where: {
+        id: { in: ids },
+        shop: session.shop
+      }
+    });
+    return json({ success: true });
+  }
+  return null;
+}
+
 export default function Index() {
   const { lookbooks, isPro, canCreate } = useLoaderData<any>();
   const navigate = useNavigate();
+  const submit = useSubmit();
 
   const resourceName = {
     singular: "lookbook",
@@ -51,6 +70,20 @@ export default function Index() {
 
   const { selectedResources, allResourcesSelected, handleSelectionChange } =
     useIndexResourceState(lookbooks);
+
+  const promotedBulkActions = [
+    {
+      content: 'Delete',
+      onAction: () => {
+        if (confirm("Are you sure you want to delete the selected lookbooks?")) {
+          submit(
+            { intent: "delete", ids: JSON.stringify(selectedResources) },
+            { method: "post" }
+          );
+        }
+      },
+    },
+  ];
 
   const rowMarkup = lookbooks.map(
     ({ id, title, status, images, updatedAt }, index) => (
@@ -128,6 +161,7 @@ export default function Index() {
                   allResourcesSelected ? "All" : selectedResources.length
                 }
                 onSelectionChange={handleSelectionChange}
+                promotedBulkActions={promotedBulkActions}
                 headings={[
                   { title: "Title" },
                   { title: "Status" },
