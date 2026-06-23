@@ -105,9 +105,14 @@ export default function Index() {
             ) : (
               <div style={{ width: "40px", height: "40px", backgroundColor: "#f4f6f8", borderRadius: "4px" }} />
             )}
-            <Text variant="bodyMd" fontWeight="bold" as="span">
-              {title}
-            </Text>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Text variant="bodyMd" fontWeight="bold" as="span">
+                {title}
+              </Text>
+              <Text variant="bodySm" tone="subdued" as="span">
+                ID: {id}
+              </Text>
+            </div>
           </div>
         </IndexTable.Cell>
         <IndexTable.Cell>

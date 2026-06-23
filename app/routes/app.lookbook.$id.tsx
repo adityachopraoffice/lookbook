@@ -323,6 +323,26 @@ export default function LookbookForm() {
                 />
               </BlockStack>
             </Card>
+            <Card>
+              <BlockStack gap="400">
+                <Text variant="headingMd" as="h2">Theme Setup</Text>
+                {isNew ? (
+                  <Text as="p" tone="subdued">Save the lookbook to get your ID.</Text>
+                ) : (
+                  <BlockStack gap="200">
+                    <Text as="p" tone="subdued">Copy this Lookbook ID and paste it into the Theme Editor block settings:</Text>
+                    <TextField
+                      label="Lookbook ID"
+                      labelHidden
+                      value={lookbook.id}
+                      autoComplete="off"
+                      readOnly
+                      selectTextOnFocus
+                    />
+                  </BlockStack>
+                )}
+              </BlockStack>
+            </Card>
           </BlockStack>
         </Layout.Section>
       </Layout>
