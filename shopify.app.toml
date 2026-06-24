@@ -44,6 +44,11 @@ api_version = "2026-07"
   uri = "/webhooks/app/scopes_update"
   topics = [ "app/scopes_update" ]
 
+  [webhooks.privacy_compliance]
+  customer_deletion_url = "https://lookbook.hostnestic.online/webhooks"
+  customer_data_request_url = "https://lookbook.hostnestic.online/webhooks"
+  shop_deletion_url = "https://lookbook.hostnestic.online/webhooks"
+
 [auth]
 redirect_urls = [
   "https://lookbook.hostnestic.online/api/auth",
