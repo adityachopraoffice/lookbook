@@ -129,9 +129,9 @@ export default function Templates() {
                     <img src={template.image} alt={template.title} className="template-image-element" />
                   </div>
                   <div className="template-card-body">
-                    <BlockStack gap="200" align="space-between" style={{ height: '100%' }}>
-                      <InlineStack align="space-between" blockAlign="center">
-                        <Text variant="headingMd" as="h3">{template.title}</Text>
+                    <BlockStack gap="400" align="space-between" style={{ height: '100%' }}>
+                      <InlineStack align="space-between" blockAlign="center" wrap={false}>
+                        <Text variant="headingMd" as="h3" truncate>{template.title}</Text>
                         {isProTemplate ? (
                           <Badge tone="magic">Pro</Badge>
                         ) : isStarterTemplate ? (
@@ -141,20 +141,18 @@ export default function Templates() {
                         )}
                       </InlineStack>
                       
-                      <div style={{ marginTop: "8px" }}>
-                        <InlineStack align="space-between" blockAlign="center">
-                          <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
-                          
-                          {(() => {
-                            const canApply = isPro || (isStarter && (template.plan === "Free" || template.plan === "Starter")) || template.plan === "Free";
-                            if (canApply) {
-                              return <Button variant="primary" onClick={() => navigate(`/app/lookbook/new?layout=${template.id}`)}>Apply</Button>;
-                            } else {
-                              return <Button variant="primary" tone="success" onClick={() => navigate('/app/pricing')}>Upgrade to {template.plan}</Button>;
-                            }
-                          })()}
-                        </InlineStack>
-                      </div>
+                      <InlineStack align="space-between" blockAlign="center" wrap={false}>
+                        <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
+                        
+                        {(() => {
+                          const canApply = isPro || (isStarter && (template.plan === "Free" || template.plan === "Starter")) || template.plan === "Free";
+                          if (canApply) {
+                            return <Button variant="primary" onClick={() => navigate(`/app/lookbook/new?layout=${template.id}`)}>Apply</Button>;
+                          } else {
+                            return <Button variant="primary" tone="success" onClick={() => navigate('/app/pricing')}>Upgrade</Button>;
+                          }
+                        })()}
+                      </InlineStack>
                     </BlockStack>
                   </div>
                 </div>
