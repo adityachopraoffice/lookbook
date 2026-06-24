@@ -128,8 +128,8 @@ export default function Templates() {
                   <div className="template-card-image" style={{ background: bgClass }}>
                     <img src={template.image} alt={template.title} className="template-image-element" />
                   </div>
-                  <div className="template-card-body" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <div>
+                  <div className="template-card-body" style={{ display: 'block' }}>
+                    <div style={{ display: 'block', minHeight: '80px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text variant="headingMd" as="h3">{template.title}</Text>
                         {isProTemplate ? (
@@ -140,12 +140,12 @@ export default function Templates() {
                           <Badge tone="success">Free</Badge>
                         )}
                       </div>
-                      <div style={{ marginTop: '8px' }}>
+                      <div style={{ marginTop: '12px' }}>
                         <Text as="p" tone="subdued" breakWord>{template.description}</Text>
                       </div>
                     </div>
                     
-                    <div style={{ marginTop: "16px", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: "1px solid #e2e8f0", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
                       
                       {(() => {
