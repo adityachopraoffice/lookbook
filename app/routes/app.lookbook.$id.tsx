@@ -91,16 +91,19 @@ export async function action({ request, params }: any) {
   }
 
   if (intent === "savePin") {
-    // Enforce 5 hotspot limit for free plan
+    // Enforce hotspot limits based on plan
     const { billing } = await authenticate.admin(request);
-    const billingCheck = await billing.check({ plans: ["Pro Plan"], isTest: true });
+    const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest: true });
     
-    if (!billingCheck.hasActivePayment) {
+    const subscriptions = billingCheck.appSubscriptions;
+    const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";
+
+    if (activePlan === "Free Plan") {
       const totalPins = await prisma.pin.count({
         where: { image: { lookbookId: params.id } }
       });
       if (totalPins >= 5) {
-        return json({ error: "Free plan limit reached (max 5 hotspots). Please upgrade to Pro." }, { status: 403 });
+        return json({ error: "Free plan limit reached (max 5 hotspots). Please upgrade to Starter or Pro." }, { status: 403 });
       }
     }
 
@@ -130,13 +133,17 @@ export async function action({ request, params }: any) {
 
   if (params.id === "new") {
     const { billing } = await authenticate.admin(request);
-    const billingCheck = await billing.check({ plans: ["Pro Plan"], isTest: true });
+    const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest: true });
     
-    if (!billingCheck.hasActivePayment) {
-      const totalLookbooks = await prisma.lookbook.count({ where: { shop: session.shop } });
-      if (totalLookbooks >= 1) {
-        return json({ error: "Free plan limit reached (1 lookbook). Please upgrade to Pro." }, { status: 403 });
-      }
+    const subscriptions = billingCheck.appSubscriptions;
+    const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";
+    const totalLookbooks = await prisma.lookbook.count({ where: { shop: session.shop } });
+
+    if (activePlan === "Free Plan" && totalLookbooks >= 1) {
+      return json({ error: "Free plan limit reached (1 lookbook). Please upgrade to Starter or Pro." }, { status: 403 });
+    }
+    if (activePlan === "Starter Plan" && totalLookbooks >= 5) {
+      return json({ error: "Starter plan limit reached (5 lookbooks). Please upgrade to Pro." }, { status: 403 });
     }
 
     const lookbook = await prisma.lookbook.create({ data });
