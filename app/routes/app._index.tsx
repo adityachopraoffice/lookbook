@@ -268,18 +268,20 @@ export default function Index() {
               </svg>
             </div>
           </Layout.Section>
-        {!isPro && (
-          <Layout.Section>
-            <Card padding="400">
-              <Text as="h2" variant="headingMd">{activePlan} Active</Text>
-              {activePlan === "Free Plan" ? (
-                <p style={{ marginTop: '8px' }}>You are on the Free plan (1 lookbook, max 5 hotspots). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Starter or Pro</a> for more features.</p>
-              ) : (
-                <p style={{ marginTop: '8px' }}>You are on the Starter plan (up to 5 lookbooks). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Pro</a> for unlimited lookbooks and premium layouts.</p>
-              )}
-            </Card>
-          </Layout.Section>
-        )}
+        <Layout.Section>
+          <Card padding="400">
+            <Text as="h2" variant="headingMd">{activePlan} Active</Text>
+            {activePlan === "Free Plan" && (
+              <p style={{ marginTop: '8px' }}>You are on the Free plan (1 lookbook, max 5 hotspots). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Starter or Pro</a> for more features.</p>
+            )}
+            {activePlan === "Starter Plan" && (
+              <p style={{ marginTop: '8px' }}>You are on the Starter plan (up to 5 lookbooks). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Pro</a> for unlimited lookbooks and premium layouts.</p>
+            )}
+            {activePlan === "Pro Plan" && (
+              <p style={{ marginTop: '8px' }}>You are on the Pro plan. You have unlimited access to all lookbooks, premium layouts, and custom storefront features.</p>
+            )}
+          </Card>
+        </Layout.Section>
         <Layout.Section>
           <Card padding="0">
             {lookbooks.length === 0 ? (
