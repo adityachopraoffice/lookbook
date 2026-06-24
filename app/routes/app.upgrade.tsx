@@ -5,8 +5,7 @@ export async function loader({ request }: any) {
   const { billing } = await authenticate.admin(request);
   await billing.require({
     plans: ["Pro Plan"],
-    isTest: true,
-    onFailure: async () => billing.request({ plan: "Pro Plan", isTest: true }),
+    onFailure: async () => billing.request({ plan: "Pro Plan" }),
   });
   return redirect("/app");
 }

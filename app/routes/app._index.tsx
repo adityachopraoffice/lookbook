@@ -23,7 +23,6 @@ export async function loader({ request }: any) {
   // Check billing plan
   const billingCheck = await billing.check({
     plans: ["Starter Plan", "Pro Plan"],
-    isTest: true,
   });
   const subscriptions = billingCheck.appSubscriptions;
   const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";

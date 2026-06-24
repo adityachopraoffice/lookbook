@@ -15,7 +15,6 @@ export async function loader({ request }: any) {
   
   const billingCheck = await billing.check({
     plans: ["Starter Plan", "Pro Plan"],
-    isTest: true,
   });
   
   const subscriptions = billingCheck.appSubscriptions;
@@ -33,13 +32,11 @@ export async function action({ request }: any) {
   if (intent === "downgrade") {
     const billingCheck = await billing.check({
       plans: ["Starter Plan", "Pro Plan"],
-      isTest: true,
     });
     const subscription = billingCheck.appSubscriptions?.[0];
     if (subscription) {
       await billing.cancel({
         subscriptionId: subscription.id,
-        isTest: true,
         prorate: true,
       });
     }
@@ -51,7 +48,6 @@ export async function action({ request }: any) {
   try {
     await billing.request({
       plan: targetPlan,
-      isTest: true,
     });
   } catch (error: any) {
     if (error instanceof Response) {
