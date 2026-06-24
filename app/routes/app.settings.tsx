@@ -17,7 +17,13 @@ import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 
 export async function loader({ request }: any) {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
+  
+  const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest: true });
+  const activePlan = billingCheck.appSubscriptions?.[0]?.name || "Free Plan";
+  
+  const isStarter = activePlan === "Starter Plan";
+  const isPro = activePlan === "Pro Plan";
   
   let settings = await prisma.shopSettings.findUnique({
     where: { shop: session.shop }
@@ -29,7 +35,7 @@ export async function loader({ request }: any) {
     });
   }
 
-  return { settings };
+  return { settings, activePlan, isStarter, isPro };
 }
 
 export async function action({ request }: any) {
@@ -51,7 +57,7 @@ export async function action({ request }: any) {
 }
 
 export default function Settings() {
-  const { settings } = useLoaderData<any>();
+  const { settings, activePlan, isStarter, isPro } = useLoaderData<any>();
   const submit = useSubmit();
   const navigation = useNavigation();
 
@@ -78,9 +84,12 @@ export default function Settings() {
                   <Select
                     label="Default Storefront Layout"
                     options={[
-                      { label: "Grid", value: "GRID" },
-                      { label: "Hero Image", value: "HERO" },
-                      { label: "Slideshow", value: "SLIDESHOW" },
+                      { label: "Grid (Free)", value: "GRID" },
+                      { label: "Hero Image (Free)", value: "HERO" },
+                      { label: "Masonry Grid (Starter)", value: "MASONRY", disabled: !isStarter && !isPro },
+                      { label: "Featured Mosaic (Starter)", value: "MOSAIC", disabled: !isStarter && !isPro },
+                      { label: "Slideshow (Pro)", value: "SLIDESHOW", disabled: !isPro },
+                      { label: "Vertical Stack (Pro)", value: "STACK", disabled: !isPro },
                     ]}
                     value={defaultLayout}
                     onChange={setDefaultLayout}
@@ -99,7 +108,8 @@ export default function Settings() {
                     value={hotspotColor}
                     onChange={setHotspotColor}
                     autoComplete="off"
-                    helpText="Set the default color for the hotspot dots on your storefront (e.g. #000000 or #FF5500). This can be overridden in the Theme Editor."
+                    disabled={!isPro}
+                    helpText={!isPro ? "Upgrade to Pro to unlock custom hotspot colors." : "Set the default color for the hotspot dots on your storefront (e.g. #000000 or #FF5500)."}
                   />
                   <div style={{
                     marginTop: '10px',
@@ -107,7 +117,8 @@ export default function Settings() {
                     height: '30px',
                     borderRadius: '50%',
                     backgroundColor: hotspotColor,
-                    border: '2px solid #ccc'
+                    border: '2px solid #ccc',
+                    opacity: isPro ? 1 : 0.5
                   }} />
                 </FormLayout>
               </BlockStack>
