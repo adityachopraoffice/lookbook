@@ -130,23 +130,18 @@ export default function Templates() {
                   </div>
                   <div className="template-card-body">
                     <BlockStack gap="200" align="space-between" style={{ height: '100%' }}>
-                      <div>
-                        <InlineStack align="space-between" blockAlign="center">
-                          <Text variant="headingMd" as="h3">{template.title}</Text>
-                          {isProTemplate ? (
-                            <Badge tone="magic">Pro</Badge>
-                          ) : isStarterTemplate ? (
-                            <Badge tone="info">Starter</Badge>
-                          ) : (
-                            <Badge tone="success">Free</Badge>
-                          )}
-                        </InlineStack>
-                        <div style={{ marginTop: '8px' }}>
-                          <Text as="p" tone="subdued" breakWord>{template.description}</Text>
-                        </div>
-                      </div>
+                      <InlineStack align="space-between" blockAlign="center">
+                        <Text variant="headingMd" as="h3">{template.title}</Text>
+                        {isProTemplate ? (
+                          <Badge tone="magic">Pro</Badge>
+                        ) : isStarterTemplate ? (
+                          <Badge tone="info">Starter</Badge>
+                        ) : (
+                          <Badge tone="success">Free</Badge>
+                        )}
+                      </InlineStack>
                       
-                      <div style={{ marginTop: "16px" }}>
+                      <div style={{ marginTop: "8px" }}>
                         <InlineStack align="space-between" blockAlign="center">
                           <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
                           
