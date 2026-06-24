@@ -72,3 +72,38 @@ export async function loader({ request }: any) {
     }
   });
 }
+
+export async function action({ request }: any) {
+  const { session } = await authenticate.public.appProxy(request);
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  try {
+    const data = await request.json();
+    const { action, lookbookId, pinId } = data;
+
+    if (action === "view" && lookbookId) {
+      await (prisma.lookbook as any).update({
+        where: { id: lookbookId, shop: session.shop },
+        data: { views: { increment: 1 } },
+      });
+    } else if (action === "click" && lookbookId && pinId) {
+      await prisma.$transaction([
+        (prisma.lookbook as any).update({
+          where: { id: lookbookId, shop: session.shop },
+          data: { clicks: { increment: 1 } },
+        }),
+        (prisma.pin as any).update({
+          where: { id: pinId },
+          data: { clicks: { increment: 1 } },
+        }),
+      ]);
+    }
+
+    return json({ success: true });
+  } catch (error) {
+    console.error("Analytics proxy error:", error);
+    return json({ success: false, error: String(error) }, { status: 500 });
+  }
+}

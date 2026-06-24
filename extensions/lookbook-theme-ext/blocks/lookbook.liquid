@@ -218,7 +218,7 @@
           const priceFormatted = new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currencyCode }).format(price.amount);
 
           html += `
-            <div class="lb-hotspot" style="left: ${pin.xPercent}%; top: ${pin.yPercent}%; background-color: ${finalHotspotColor};" tabindex="0">
+            <div class="lb-hotspot" style="left: ${pin.xPercent}%; top: ${pin.yPercent}%; background-color: ${finalHotspotColor};" tabindex="0" onclick="if(window.lbTrackClick) window.lbTrackClick('${lookbookId}', '${pin.id}')">
               <div class="lb-popover">
                 ${imgUrl ? `<img src="${imgUrl}" alt="${product.title}" />` : ''}
                 <div class="lb-popover-title">${product.title}</div>
@@ -272,6 +272,22 @@
           btn.innerText = "Error";
           setTimeout(() => { btn.innerText = prevText; btn.disabled = false; }, 2000);
         }
+      };
+
+      // Track View Analytics
+      fetch("/apps/lookbook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "view", lookbookId })
+      }).catch(e => console.error("Analytics view error", e));
+
+      // Global click tracking function
+      window.lbTrackClick = function(lId, pId) {
+        fetch("/apps/lookbook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "click", lookbookId: lId, pinId: pId })
+        }).catch(e => console.error("Analytics click error", e));
       };
 
     } catch (err) {
