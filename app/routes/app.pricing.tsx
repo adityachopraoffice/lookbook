@@ -4,12 +4,8 @@ import { useEffect } from "react";
 import {
   Page,
   Layout,
-  Card,
   Text,
-  Button,
-  BlockStack,
   InlineStack,
-  List,
   Badge,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
@@ -18,11 +14,14 @@ export async function loader({ request }: any) {
   const { billing } = await authenticate.admin(request);
   
   const billingCheck = await billing.check({
-    plans: ["Pro Plan"],
+    plans: ["Starter Plan", "Pro Plan"],
     isTest: true,
   });
   
-  return { isPro: billingCheck.hasActivePayment };
+  const subscriptions = billingCheck.appSubscriptions;
+  const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";
+  
+  return { activePlan };
 }
 
 export async function action({ request }: any) {
@@ -33,7 +32,7 @@ export async function action({ request }: any) {
 
   if (intent === "downgrade") {
     const billingCheck = await billing.check({
-      plans: ["Pro Plan"],
+      plans: ["Starter Plan", "Pro Plan"],
       isTest: true,
     });
     const subscription = billingCheck.appSubscriptions?.[0];
@@ -47,9 +46,11 @@ export async function action({ request }: any) {
     return null;
   }
 
+  const targetPlan = intent === "upgrade_starter" ? "Starter Plan" : "Pro Plan";
+
   try {
     await billing.request({
-      plan: "Pro Plan",
+      plan: targetPlan,
       isTest: true,
     });
   } catch (error: any) {
@@ -62,7 +63,6 @@ export async function action({ request }: any) {
         if (url) return { confirmationUrl: url };
       }
     }
-    // If it's not the expected response, or it's another error, rethrow it
     throw error;
   }
   
@@ -70,7 +70,7 @@ export async function action({ request }: any) {
 }
 
 export default function Pricing() {
-  const { isPro } = useLoaderData<any>();
+  const { activePlan } = useLoaderData<any>();
   const submit = useSubmit();
   const actionData = useActionData<any>();
 
@@ -80,32 +80,27 @@ export default function Pricing() {
     }
   }, [actionData]);
 
-  const handleUpgrade = () => {
-    submit({ intent: "upgrade" }, { method: "post" });
-  };
-
-  const handleDowngrade = () => {
-    submit({ intent: "downgrade" }, { method: "post" });
+  const handleAction = (intent: string) => {
+    submit({ intent }, { method: "post" });
   };
 
   const customStyles = `
     .pricing-container {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 24px;
       margin-top: 20px;
     }
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       .pricing-container {
-        flex-direction: row;
+        grid-template-columns: repeat(3, 1fr);
         align-items: stretch;
       }
     }
     .pricing-card {
-      flex: 1;
       background: white;
       border-radius: 16px;
-      padding: 40px;
+      padding: 32px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       border: 1px solid #e2e8f0;
       position: relative;
@@ -117,29 +112,27 @@ export default function Pricing() {
       transform: translateY(-4px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
+    .pricing-starter {
+      border: 2px solid transparent;
+      background: linear-gradient(white, white) padding-box,
+                  linear-gradient(135deg, #10b981, #3b82f6) border-box;
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15);
+    }
+    .pricing-starter .feature-list li svg { color: #10b981; }
+    
     .pricing-pro {
       border: 2px solid transparent;
       background: linear-gradient(white, white) padding-box,
-                  linear-gradient(135deg, #8b5cf6, #38bdf8) border-box;
-      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.15), 0 8px 10px -6px rgba(139, 92, 246, 0.1);
+                  linear-gradient(135deg, #8b5cf6, #ec4899) border-box;
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.2);
     }
-    .pricing-pro::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.05), transparent 40%);
-      border-radius: 14px;
-      pointer-events: none;
-    }
-    .pricing-pro:hover {
-      box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.2), 0 10px 10px -5px rgba(139, 92, 246, 0.1);
-    }
+    .pricing-pro .feature-list li svg { color: #8b5cf6; }
+
     .popular-badge {
       position: absolute;
       top: -12px;
       left: 50%;
       transform: translateX(-50%);
-      background: linear-gradient(to right, #8b5cf6, #38bdf8);
       color: white;
       padding: 4px 16px;
       border-radius: 20px;
@@ -147,14 +140,16 @@ export default function Pricing() {
       font-weight: 700;
       letter-spacing: 0.5px;
       text-transform: uppercase;
-      box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3);
       white-space: nowrap;
     }
+    .badge-starter { background: linear-gradient(to right, #10b981, #3b82f6); box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); }
+    .badge-pro { background: linear-gradient(to right, #8b5cf6, #ec4899); box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3); }
+
     .price-text {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 800;
       line-height: 1;
-      margin: 24px 0 8px 0;
+      margin: 20px 0 8px 0;
       color: #0f172a;
     }
     .price-text span {
@@ -165,32 +160,26 @@ export default function Pricing() {
     .feature-list {
       list-style: none;
       padding: 0;
-      margin: 32px 0;
+      margin: 24px 0;
       flex-grow: 1;
     }
     .feature-list li {
       display: flex;
       align-items: flex-start;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       color: #334155;
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.5;
     }
     .feature-list li svg {
       flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      margin-right: 12px;
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
       margin-top: 2px;
-      color: #10b981;
+      color: #64748b;
     }
-    .pricing-pro .feature-list li svg {
-      color: #8b5cf6;
-    }
-    .btn-upgrade {
-      background: linear-gradient(to right, #8b5cf6, #6366f1);
-      color: white;
-      border: none;
+    .btn-action {
       padding: 12px 24px;
       border-radius: 8px;
       font-weight: 600;
@@ -198,34 +187,13 @@ export default function Pricing() {
       cursor: pointer;
       width: 100%;
       transition: all 0.2s;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
       text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-    .btn-upgrade:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
-    }
-    .btn-upgrade:disabled {
-      background: #e2e8f0;
-      color: #94a3b8;
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
+      border: none;
     }
     .btn-downgrade {
       background: white;
       color: #334155;
       border: 1px solid #cbd5e1;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.2s;
-      text-align: center;
     }
     .btn-downgrade:hover:not(:disabled) {
       background: #f8fafc;
@@ -236,6 +204,29 @@ export default function Pricing() {
       border-color: #e2e8f0;
       background: #f8fafc;
       cursor: not-allowed;
+    }
+    
+    .btn-starter {
+      background: linear-gradient(to right, #10b981, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .btn-pro {
+      background: linear-gradient(to right, #8b5cf6, #ec4899);
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    
+    .btn-starter:hover:not(:disabled), .btn-pro:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+    .btn-starter:disabled, .btn-pro:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
     }
   `;
 
@@ -254,43 +245,65 @@ export default function Pricing() {
             {/* Free Plan */}
             <div className="pricing-card">
               <InlineStack align="space-between">
-                <Text variant="headingLg" as="h2">Free Plan</Text>
-                {!isPro && <Badge tone="success">Active</Badge>}
+                <Text variant="headingLg" as="h2">Free</Text>
+                {activePlan === "Free Plan" && <Badge tone="success">Active</Badge>}
               </InlineStack>
               <div className="price-text">$0<span>/month</span></div>
-              <Text as="p" tone="subdued">Perfect for getting started with shoppable lookbooks.</Text>
+              <Text as="p" tone="subdued">Perfect for getting started.</Text>
               
               <ul className="feature-list">
                 <li>{checkIcon} <span>Create 1 Lookbook</span></li>
                 <li>{checkIcon} <span>Up to 5 hotspots total</span></li>
-                <li>{checkIcon} <span>Grid and Hero Image layouts</span></li>
-                <li>{checkIcon} <span>Basic storefront integration</span></li>
+                <li>{checkIcon} <span>Grid & Hero layouts</span></li>
+                <li>{checkIcon} <span>Basic integration</span></li>
               </ul>
 
-              <button className="btn-downgrade" disabled={!isPro} onClick={handleDowngrade}>
-                {isPro ? "Downgrade to Free" : "Current Plan"}
+              <button className="btn-action btn-downgrade" disabled={activePlan === "Free Plan"} onClick={() => handleAction("downgrade")}>
+                {activePlan === "Free Plan" ? "Current Plan" : "Downgrade to Free"}
+              </button>
+            </div>
+
+            {/* Starter Plan */}
+            <div className="pricing-card pricing-starter">
+              <div className="popular-badge badge-starter">Great Value</div>
+              <InlineStack align="space-between">
+                <Text variant="headingLg" as="h2">Starter</Text>
+                {activePlan === "Starter Plan" && <Badge tone="success">Active</Badge>}
+              </InlineStack>
+              <div className="price-text">$39<span>/month</span></div>
+              <Text as="p" tone="subdued">For small but growing brands.</Text>
+              
+              <ul className="feature-list">
+                <li>{checkIcon} <span>Up to 5 Lookbooks</span></li>
+                <li>{checkIcon} <span><strong>Unlimited</strong> hotspots</span></li>
+                <li>{checkIcon} <span>Includes Masonry & Mosaic layouts</span></li>
+                <li>{checkIcon} <span>Storefront Analytics</span></li>
+              </ul>
+
+              <button className="btn-action btn-starter" disabled={activePlan === "Starter Plan"} onClick={() => handleAction("upgrade_starter")}>
+                {activePlan === "Starter Plan" ? "Current Plan" : "Upgrade to Starter"}
               </button>
             </div>
 
             {/* Pro Plan */}
             <div className="pricing-card pricing-pro">
-              <div className="popular-badge">Recommended</div>
+              <div className="popular-badge badge-pro">Best Experience</div>
               <InlineStack align="space-between">
-                <Text variant="headingLg" as="h2">Pro Plan</Text>
-                {isPro && <Badge tone="success">Active</Badge>}
+                <Text variant="headingLg" as="h2">Pro</Text>
+                {activePlan === "Pro Plan" && <Badge tone="success">Active</Badge>}
               </InlineStack>
-              <div className="price-text">$9.99<span>/month</span></div>
-              <Text as="p" tone="subdued">For growing brands that need unlimited shoppable content.</Text>
+              <div className="price-text">$69<span>/month</span></div>
+              <Text as="p" tone="subdued">Unlimited everything for pros.</Text>
               
               <ul className="feature-list">
                 <li>{checkIcon} <span><strong>Unlimited</strong> Lookbooks</span></li>
                 <li>{checkIcon} <span><strong>Unlimited</strong> hotspots</span></li>
-                <li>{checkIcon} <span>Access to all 6 premium layouts (Masonry, Mosaic, Stack, etc.)</span></li>
+                <li>{checkIcon} <span>All 6 premium layouts (Stack, Slideshow)</span></li>
                 <li>{checkIcon} <span>Custom hotspot dot styling</span></li>
               </ul>
 
-              <button className="btn-upgrade" disabled={isPro} onClick={handleUpgrade}>
-                {isPro ? "Current Plan" : "Upgrade to Pro"}
+              <button className="btn-action btn-pro" disabled={activePlan === "Pro Plan"} onClick={() => handleAction("upgrade_pro")}>
+                {activePlan === "Pro Plan" ? "Current Plan" : "Upgrade to Pro"}
               </button>
             </div>
           </div>

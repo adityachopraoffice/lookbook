@@ -22,10 +22,14 @@ export async function loader({ request }: any) {
 
   // Check billing plan
   const billingCheck = await billing.check({
-    plans: ["Pro Plan"],
+    plans: ["Starter Plan", "Pro Plan"],
     isTest: true,
   });
-  const isPro = billingCheck.hasActivePayment;
+  const subscriptions = billingCheck.appSubscriptions;
+  const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";
+  
+  const isStarter = activePlan === "Starter Plan";
+  const isPro = activePlan === "Pro Plan";
 
   const lookbooks = await prisma.lookbook.findMany({
     where: { shop: session.shop },
@@ -56,9 +60,9 @@ export async function loader({ request }: any) {
     totalClicks: aggregates._sum?.clicks || 0
   };
 
-  const canCreate = isPro || lookbooks.length < 1;
+  const canCreate = isPro || (isStarter && lookbooks.length < 5) || (!isStarter && !isPro && lookbooks.length < 1);
 
-  return { lookbooks, isPro, canCreate, stats };
+  return { lookbooks, isPro, isStarter, activePlan, canCreate, stats };
 }
 
 export async function action({ request }: any) {
@@ -80,7 +84,7 @@ export async function action({ request }: any) {
 }
 
 export default function Index() {
-  const { lookbooks, isPro, canCreate, stats } = useLoaderData<any>();
+  const { lookbooks, isPro, isStarter, activePlan, canCreate, stats } = useLoaderData<any>();
   const navigate = useNavigate();
   const submit = useSubmit();
 
@@ -218,7 +222,7 @@ export default function Index() {
       title="Dashboard"
       subtitle="Manage your interactive lookbooks and view performance."
       primaryAction={{
-        content: canCreate ? "Create lookbook" : "Upgrade to Pro to Create",
+        content: canCreate ? "Create lookbook" : "Upgrade to Create More",
         onAction: () => canCreate ? navigate("/app/lookbook/new") : navigate("/app/pricing"),
         disabled: !canCreate && isPro
       }}
@@ -267,8 +271,12 @@ export default function Index() {
         {!isPro && (
           <Layout.Section>
             <Card padding="400">
-              <Text as="h2" variant="headingMd">Free Plan Active</Text>
-              <p>You are on the Free plan (1 lookbook, max 5 hotspots). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Pro ($9.99/mo)</a> for unlimited lookbooks and hotspots.</p>
+              <Text as="h2" variant="headingMd">{activePlan} Active</Text>
+              {activePlan === "Free Plan" ? (
+                <p style={{ marginTop: '8px' }}>You are on the Free plan (1 lookbook, max 5 hotspots). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Starter or Pro</a> for more features.</p>
+              ) : (
+                <p style={{ marginTop: '8px' }}>You are on the Starter plan (up to 5 lookbooks). <a href="/app/pricing" style={{ fontWeight: 'bold' }}>Upgrade to Pro</a> for unlimited lookbooks and premium layouts.</p>
+              )}
             </Card>
           </Layout.Section>
         )}
