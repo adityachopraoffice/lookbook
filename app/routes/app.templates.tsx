@@ -128,39 +128,35 @@ export default function Templates() {
                   <div className="template-card-image" style={{ background: bgClass }}>
                     <img src={template.image} alt={template.title} className="template-image-element" />
                   </div>
-                  <div className="template-card-body">
-                    <BlockStack gap="200" align="space-between" style={{ height: '100%' }}>
-                      <div>
-                        <InlineStack align="space-between" blockAlign="center">
-                          <Text variant="headingMd" as="h3">{template.title}</Text>
-                          {isProTemplate ? (
-                            <Badge tone="magic">Pro</Badge>
-                          ) : isStarterTemplate ? (
-                            <Badge tone="info">Starter</Badge>
-                          ) : (
-                            <Badge tone="success">Free</Badge>
-                          )}
-                        </InlineStack>
-                        <div style={{ marginTop: '8px' }}>
-                          <Text as="p" tone="subdued" breakWord>{template.description}</Text>
-                        </div>
+                  <div className="template-card-body" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text variant="headingMd" as="h3">{template.title}</Text>
+                        {isProTemplate ? (
+                          <Badge tone="magic">Pro</Badge>
+                        ) : isStarterTemplate ? (
+                          <Badge tone="info">Starter</Badge>
+                        ) : (
+                          <Badge tone="success">Free</Badge>
+                        )}
                       </div>
+                      <div style={{ marginTop: '8px' }}>
+                        <Text as="p" tone="subdued" breakWord>{template.description}</Text>
+                      </div>
+                    </div>
+                    
+                    <div style={{ marginTop: "16px", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
                       
-                      <div style={{ marginTop: "16px" }}>
-                        <InlineStack align="space-between" blockAlign="center">
-                          <Button onClick={() => navigate(`/app/preview?layout=${template.id}`)} variant="plain">Live Preview</Button>
-                          
-                          {(() => {
-                            const canApply = isPro || (isStarter && (template.plan === "Free" || template.plan === "Starter")) || template.plan === "Free";
-                            if (canApply) {
-                              return <Button variant="primary" onClick={() => navigate(`/app/lookbook/new?layout=${template.id}`)}>Apply</Button>;
-                            } else {
-                              return <Button variant="primary" tone="success" onClick={() => navigate('/app/pricing')}>Upgrade</Button>;
-                            }
-                          })()}
-                        </InlineStack>
-                      </div>
-                    </BlockStack>
+                      {(() => {
+                        const canApply = isPro || (isStarter && (template.plan === "Free" || template.plan === "Starter")) || template.plan === "Free";
+                        if (canApply) {
+                          return <Button variant="primary" onClick={() => navigate(`/app/lookbook/new?layout=${template.id}`)}>Apply</Button>;
+                        } else {
+                          return <Button variant="primary" tone="success" onClick={() => navigate('/app/pricing')}>Upgrade</Button>;
+                        }
+                      })()}
+                    </div>
                   </div>
                 </div>
               </Card>
