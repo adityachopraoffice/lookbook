@@ -12,8 +12,13 @@ import prisma from "../db.server";
 import { uploadFileToShopify } from "../utils/shopifyUpload";
 
 export async function loader({ request, params }: any) {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
   const { id } = params;
+
+  const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest: true });
+  const activePlan = billingCheck.appSubscriptions?.[0]?.name || "Free Plan";
+  const isStarter = activePlan === "Starter Plan";
+  const isPro = activePlan === "Pro Plan";
 
   const settings = await prisma.shopSettings.findUnique({ where: { shop: session.shop } });
   const defaultLayout = settings?.defaultLayout || "GRID";
@@ -23,7 +28,9 @@ export async function loader({ request, params }: any) {
     const layout = url.searchParams.get("layout") || defaultLayout;
     return {
       lookbook: { title: "", status: "DRAFT", layout: layout, images: [] },
-      isNew: true
+      isNew: true,
+      isStarter,
+      isPro
     };
   }
 
@@ -41,7 +48,7 @@ export async function loader({ request, params }: any) {
     throw new Response("Not Found", { status: 404 });
   }
 
-  return { lookbook, isNew: false };
+  return { lookbook, isNew: false, isStarter, isPro };
 }
 
 export async function action({ request, params }: any) {
@@ -158,7 +165,7 @@ export async function action({ request, params }: any) {
 }
 
 export default function LookbookForm() {
-  const { lookbook, isNew } = useLoaderData<any>();
+  const { lookbook, isNew, isStarter, isPro } = useLoaderData<any>();
   const [title, setTitle] = useState(lookbook.title);
   const [status, setStatus] = useState(lookbook.status);
   const [layout, setLayout] = useState(lookbook.layout);
@@ -341,12 +348,12 @@ export default function LookbookForm() {
                 <Select
                   label="Storefront layout"
                   options={[
-                    { label: "Grid (Default)", value: "GRID" },
-                    { label: "Hero Image", value: "HERO" },
-                    { label: "Slideshow", value: "SLIDESHOW" },
-                    { label: "Masonry Grid", value: "MASONRY" },
-                    { label: "Vertical Stack", value: "STACK" },
-                    { label: "Featured Mosaic", value: "MOSAIC" },
+                    { label: "Grid (Free)", value: "GRID" },
+                    { label: "Hero Image (Free)", value: "HERO" },
+                    { label: "Masonry Grid (Starter)", value: "MASONRY", disabled: !isStarter && !isPro },
+                    { label: "Featured Mosaic (Starter)", value: "MOSAIC", disabled: !isStarter && !isPro },
+                    { label: "Slideshow (Pro)", value: "SLIDESHOW", disabled: !isPro },
+                    { label: "Vertical Stack (Pro)", value: "STACK", disabled: !isPro },
                   ]}
                   value={layout}
                   onChange={setLayout}
