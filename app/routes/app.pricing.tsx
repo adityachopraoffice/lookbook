@@ -266,7 +266,7 @@ export default function Pricing() {
                 <Text variant="headingLg" as="h2">Starter</Text>
                 {activePlan === "Starter Plan" && <Badge tone="success">Active</Badge>}
               </InlineStack>
-              <div className="price-text">$39<span>/month</span></div>
+              <div className="price-text">$21<span>/month</span></div>
               <Text as="p" tone="subdued">For small but growing brands.</Text>
               
               <ul className="feature-list">
@@ -288,7 +288,7 @@ export default function Pricing() {
                 <Text variant="headingLg" as="h2">Pro</Text>
                 {activePlan === "Pro Plan" && <Badge tone="success">Active</Badge>}
               </InlineStack>
-              <div className="price-text">$69<span>/month</span></div>
+              <div className="price-text">$25<span>/month</span></div>
               <Text as="p" tone="subdued">Unlimited everything for pros.</Text>
               
               <ul className="feature-list">
