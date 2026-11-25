@@ -7,7 +7,7 @@ import {
   ResourceList, ResourceItem, Avatar
 } from "@shopify/polaris";
 import { PlusIcon, DeleteIcon } from "@shopify/polaris-icons";
-import { authenticate } from "../shopify.server";
+import { authenticate, isTest } from "../shopify.server";
 import prisma from "../db.server";
 import { uploadFileToShopify } from "../utils/shopifyUpload";
 
@@ -15,7 +15,7 @@ export async function loader({ request, params }: any) {
   const { session, billing } = await authenticate.admin(request);
   const { id } = params;
 
-  const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"] });
+  const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest });
   const activePlan = billingCheck.appSubscriptions?.[0]?.name || "Free Plan";
   const isStarter = activePlan === "Starter Plan";
   const isPro = activePlan === "Pro Plan";
@@ -100,7 +100,7 @@ export async function action({ request, params }: any) {
   if (intent === "savePin") {
     // Enforce hotspot limits based on plan
     const { billing } = await authenticate.admin(request);
-    const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"] });
+    const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest });
     
     const subscriptions = billingCheck.appSubscriptions;
     const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";
@@ -140,7 +140,7 @@ export async function action({ request, params }: any) {
 
   if (params.id === "new") {
     const { billing } = await authenticate.admin(request);
-    const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"] });
+    const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest });
     
     const subscriptions = billingCheck.appSubscriptions;
     const activePlan = subscriptions && subscriptions.length > 0 ? subscriptions[0].name : "Free Plan";
