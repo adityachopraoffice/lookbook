@@ -13,13 +13,13 @@ import {
   TextField,
   PageActions
 } from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
+import { authenticate, isTest } from "../shopify.server";
 import prisma from "../db.server";
 
 export async function loader({ request }: any) {
   const { session, billing } = await authenticate.admin(request);
   
-  const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"] });
+  const billingCheck = await billing.check({ plans: ["Starter Plan", "Pro Plan"], isTest });
   const activePlan = billingCheck.appSubscriptions?.[0]?.name || "Free Plan";
   
   const isStarter = activePlan === "Starter Plan";
