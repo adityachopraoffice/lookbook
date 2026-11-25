@@ -8,13 +8,13 @@ import {
   InlineStack,
   Badge,
 } from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
+import { authenticate, isTest } from "../shopify.server";
 
 export async function loader({ request }: any) {
   const { billing } = await authenticate.admin(request);
   
   const billingCheck = await billing.check({
-    plans: ["Starter Plan", "Pro Plan"],
+    plans: ["Starter Plan", "Pro Plan"], isTest
   });
   
   const subscriptions = billingCheck.appSubscriptions;
@@ -31,13 +31,13 @@ export async function action({ request }: any) {
 
   if (intent === "downgrade") {
     const billingCheck = await billing.check({
-      plans: ["Starter Plan", "Pro Plan"],
+      plans: ["Starter Plan", "Pro Plan"], isTest
     });
     const subscription = billingCheck.appSubscriptions?.[0];
     if (subscription) {
       await billing.cancel({
         subscriptionId: subscription.id,
-        prorate: true,
+        prorate: true, isTest
       });
     }
     return null;
@@ -47,7 +47,7 @@ export async function action({ request }: any) {
 
   try {
     await billing.request({
-      plan: targetPlan,
+      plan: targetPlan,isTest
     });
   } catch (error: any) {
     if (error instanceof Response) {
