@@ -14,7 +14,7 @@ import {
   BlockStack,
   InlineGrid
 } from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
+import { authenticate, isTest } from "../shopify.server";
 import prisma from "../db.server";
 
 export async function loader({ request }: any) {
