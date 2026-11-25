@@ -49,7 +49,7 @@ const shopify = shopifyApp({
 });
 
 export default shopify;
-export const isTest = process.env.BILLING_TEST_MODE === "true";
+export const isTest = false;
 export const apiVersion = ApiVersion.October25;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const authenticate = shopify.authenticate;
